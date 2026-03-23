@@ -30,6 +30,11 @@
             <div class="logo">MH BRILLANCE</div>
             <ul class="nav-links">
                 <li><a href="#home">Início</a></li>
+                <li class="mobile-only"><span class="menu-label">Categorias</span></li>
+                <li class="mobile-only"><a href="#products" onclick="filterProducts('anel')">Anéis</a></li>
+                <li class="mobile-only"><a href="#products" onclick="filterProducts('colar')">Colares</a></li>
+                <li class="mobile-only"><a href="#products" onclick="filterProducts('brinco')">Brincos</a></li>
+                <li class="divider mobile-only"></li>
                 <li><a href="#products">Coleções</a></li>
                 <li><a href="#about">Sobre</a></li>
                 <li><a href="#contact">Contato</a></li>
@@ -39,7 +44,7 @@
                     <i class="fa-solid fa-bag-shopping"></i>
                     <span class="cart-count">0</span>
                 </div>
-                <div class="mobile-menu-btn">
+                <div class="mobile-menu-btn" id="mobile-menu-btn">
                     <i class="fa-solid fa-bars"></i>
                 </div>
             </div>

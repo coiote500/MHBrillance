@@ -90,19 +90,27 @@ function renderProducts(productsToRender) {
 }
 
 // Filtering
+function filterProducts(filter) {
+    const filtered = filter === 'all' 
+        ? products 
+        : products.filter(p => p.category === filter);
+    
+    renderProducts(filtered);
+    
+    // Update UI active state
+    filterBtns.forEach(btn => {
+        if (btn.dataset.filter === filter) btn.classList.add('active');
+        else btn.classList.remove('active');
+    });
+}
+
 filterBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-        filterBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        
-        const filter = btn.dataset.filter;
-        const filtered = filter === 'all' 
-            ? products 
-            : products.filter(p => p.category === filter);
-        
-        renderProducts(filtered);
+        filterProducts(btn.dataset.filter);
     });
 });
+
+window.filterProducts = filterProducts;
 
 // Cart Logic
 function addToCart(productId) {
@@ -340,23 +348,59 @@ productModal.addEventListener('click', (e) => {
 });
 
 // Mobile Menu Logic
-const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-const navLinks = document.querySelector('.nav-links');
+function initMobileMenu() {
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const navLinks = document.querySelector('.nav-links');
+    const icon = mobileMenuBtn?.querySelector('i');
+    
+    if (!mobileMenuBtn || !navLinks) return;
 
-mobileMenuBtn.addEventListener('click', () => {
-    navLinks.classList.toggle('active');
-    const icon = mobileMenuBtn.querySelector('i');
-    if (navLinks.classList.contains('active')) {
-        icon.classList.replace('fa-bars', 'fa-xmark');
-    } else {
-        icon.classList.replace('fa-xmark', 'fa-bars');
-    }
-});
+    mobileMenuBtn.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const isActive = navLinks.classList.toggle('active');
+        
+        if (isActive) {
+            icon.classList.replace('fa-bars', 'fa-xmark');
+            document.body.style.overflow = 'hidden';
+        } else {
+            icon.classList.replace('fa-xmark', 'fa-bars');
+            document.body.style.overflow = '';
+        }
+    };
 
-// Close menu on link click
-document.querySelectorAll('.nav-links a').forEach(link => {
-    link.addEventListener('click', () => {
-        navLinks.classList.remove('active');
-        mobileMenuBtn.querySelector('i').classList.replace('fa-xmark', 'fa-bars');
+    // Close menu on link click
+    navLinks.querySelectorAll('a').forEach(link => {
+        link.onclick = () => {
+            navLinks.classList.remove('active');
+            icon.classList.replace('fa-xmark', 'fa-bars');
+            document.body.style.overflow = '';
+        };
     });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (navLinks.classList.contains('active') && !navLinks.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+            navLinks.classList.remove('active');
+            icon.classList.replace('fa-xmark', 'fa-bars');
+            document.body.style.overflow = '';
+        }
+    });
+}
+
+// Global scope assignments for inline event handlers
+window.openProductModal = openProductModal;
+window.closeProductModal = closeProductModal;
+window.addToCart = addToCart;
+window.removeFromCart = removeFromCart;
+window.selectShipping = selectShipping;
+window.filterProducts = filterProducts;
+window.openCartModal = openCartModal;
+window.closeCartModal = closeCartModal;
+
+document.addEventListener('DOMContentLoaded', () => {
+    renderProducts(products);
+    setupRevealAnimation();
+    initMobileMenu();
 });
